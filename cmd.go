@@ -26,12 +26,12 @@ var rootCmd *cobra.Command
 
 func init() {
 	rootCmd = &cobra.Command{
-		Use:   "kubectl-image [podname-pattern]",
-		Short: "Show k8s-cluster pods images in one place.",
-		Example: `  # display all images in default namespace with podName/containerName/containerImage columns.
+		Use:   "kubectl-image [podname-regex]",
+		Short: "Show container images used in the cluster.",
+		Example: `  # display a table of all images in default namespace using podName/containerName/containerImage as columns.
   kubectl image
 
-  # display images that match 'nginx' podname regex-pattern in 'dev' namespace with podName/containerImage columns.
+  # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
   kubectl image -n dev nginx -c 1,2`,
 		Version: version,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -50,9 +50,9 @@ func init() {
 			kubeImage.Render()
 		},
 	}
-	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list the requested object(s) across all namespaces.")
-	rootCmd.Flags().StringP("namespace", "n", "default", "if present, the namespace scope for this CLI request.")
-	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the table columns which are separated by commas. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
+	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
+	rootCmd.Flags().StringP("namespace", "n", "default", "if present, list images in the specified namespace only. Use the default namespace as fallback.")
+	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
 }
 
 func main() {
