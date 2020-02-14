@@ -45,8 +45,8 @@ func init() {
 			}
 			namespace, _ := cmd.Flags().GetString("namespace")
 			columns, _ := cmd.Flags().GetString("columns")
-			isAllNs, _ := cmd.Flags().GetBool("all-namespaces")
-			kubeImage := NewKubeImage(regx, isAllNs, namespace, columns)
+			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
+			kubeImage := NewKubeImage(regx, allNamespace, namespace, columns)
 			kubeImage.Render()
 		},
 	}
@@ -62,20 +62,20 @@ func main() {
 }
 
 type KubeImage struct {
-	entities  []*ImageEntity
-	isAllNs   bool
-	namespace string
-	columns   string
-	regx      *regexp.Regexp
-	command   []string
+	entities     []*ImageEntity
+	allNamespace bool
+	namespace    string
+	columns      string
+	regx         *regexp.Regexp
+	command      []string
 }
 
-func NewKubeImage(regx *regexp.Regexp, isAllNs bool, namespace, columns string) *KubeImage {
+func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns string) *KubeImage {
 	return &KubeImage{
-		isAllNs:   isAllNs,
-		columns:   columns,
-		namespace: namespace,
-		regx:      regx,
+		allNamespace: allNamespace,
+		columns:      columns,
+		namespace:    namespace,
+		regx:         regx,
 	}
 }
 
@@ -129,7 +129,7 @@ func (ki *KubeImage) Columns() []string {
 }
 
 func (ki *KubeImage) Commands() []string {
-	if ki.isAllNs {
+	if ki.allNamespace {
 		return []string{"get", "pods", "-A", "-o", gotemplate}
 	} else if ki.namespace != "" {
 		return []string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}
@@ -167,7 +167,7 @@ func (ki *KubeImage) run() {
 	}
 
 	for i := 0; i < len(entities); i++ {
-		if entities[i].PodName == "" {
+		if entities[i].PodName == "" && i > 0 {
 			entities[i].Namespace = entities[i-1].Namespace
 			entities[i].PodName = entities[i-1].PodName
 		}
