@@ -103,6 +103,26 @@ func (ie *ImageEntity) format(columns []string) []string {
 	return result
 }
 
+type Counter struct {
+	cnt   int
+	items map[string]bool
+}
+
+func NewCounter() *Counter {
+	return &Counter{items: make(map[string]bool)}
+}
+
+func (c *Counter) add(obj string) {
+	if !c.items[obj] {
+		c.cnt += 1
+		c.items[obj] = true
+	}
+}
+
+func (c *Counter) Count() int {
+	return c.cnt
+}
+
 func (ki *KubeImage) stringSplit(in, sep string) []string {
 	out := make([]string, 0)
 	for _, s := range strings.Split(in, sep) {
@@ -184,6 +204,22 @@ func (ki *KubeImage) run() {
 	}
 }
 
+func (ki *KubeImage) summary() {
+	namespaceCnt := NewCounter()
+	podCnt := NewCounter()
+	imageCnt := NewCounter()
+
+	for i := 0; i < len(ki.entities); i++ {
+		namespaceCnt.add(ki.entities[i].Namespace)
+		podCnt.add(ki.entities[i].PodName)
+		imageCnt.add(ki.entities[i].ContainerImage)
+	}
+
+	fmt.Println(fmt.Sprintf("[Summary]: %d namespaces, %d pods and %d different images",
+		namespaceCnt.Count(), podCnt.Count(), imageCnt.Count(),
+	))
+}
+
 func (ki *KubeImage) Render() {
 	ki.run()
 
@@ -200,5 +236,7 @@ func (ki *KubeImage) Render() {
 	for _, v := range ki.entities {
 		table.Append(v.format(ki.Columns()))
 	}
+
+	ki.summary()
 	table.Render()
 }
