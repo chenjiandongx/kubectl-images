@@ -208,15 +208,17 @@ func (ki *KubeImage) summary() {
 	namespaceCnt := NewCounter()
 	podCnt := NewCounter()
 	imageCnt := NewCounter()
+	containerCnt := 0
 
 	for i := 0; i < len(ki.entities); i++ {
 		namespaceCnt.add(ki.entities[i].Namespace)
 		podCnt.add(ki.entities[i].PodName)
 		imageCnt.add(ki.entities[i].ContainerImage)
+		containerCnt += 1
 	}
 
-	fmt.Println(fmt.Sprintf("[Summary]: %d namespaces, %d pods and %d different images",
-		namespaceCnt.Count(), podCnt.Count(), imageCnt.Count(),
+	fmt.Println(fmt.Sprintf("[Summary]: %d namespaces, %d pods, %d containers and %d different images",
+		namespaceCnt.Count(), podCnt.Count(), containerCnt, imageCnt.Count(),
 	))
 }
 
