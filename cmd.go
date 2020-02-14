@@ -28,7 +28,7 @@ func init() {
 	rootCmd = &cobra.Command{
 		Use:   "kubectl-image [podname-regex]",
 		Short: "Show container images used in the cluster.",
-		Example: `  # display a table of all images in default namespace using podName/containerName/containerImage as columns.
+		Example: `  # display a table of all images in current namespace using podName/containerName/containerImage as columns.
   kubectl image
 
   # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
@@ -51,7 +51,7 @@ func init() {
 		},
 	}
 	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
-	rootCmd.Flags().StringP("namespace", "n", "default", "if present, list images in the specified namespace only. Use the default namespace as fallback.")
+	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
 	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
 }
 
@@ -129,10 +129,12 @@ func (ki *KubeImage) Columns() []string {
 }
 
 func (ki *KubeImage) Commands() []string {
-	if !ki.isAllNs {
+	if ki.isAllNs {
+		return []string{"get", "pods", "-A", "-o", gotemplate}
+	} else if ki.namespace != "" {
 		return []string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}
 	}
-	return []string{"get", "pods", "-A", "-o", gotemplate}
+	return []string{"get", "pods", "-o", gotemplate}
 }
 
 func (ki *KubeImage) run() {
