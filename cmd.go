@@ -61,6 +61,7 @@ func main() {
 	}
 }
 
+// KubeImage is the representation of a container image used in the cluster.
 type KubeImage struct {
 	entities     []*ImageEntity
 	allNamespace bool
@@ -70,6 +71,7 @@ type KubeImage struct {
 	command      []string
 }
 
+// NewKubeImage creates a new KubeImage instance.
 func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns string) *KubeImage {
 	return &KubeImage{
 		allNamespace: allNamespace,
@@ -79,6 +81,7 @@ func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns str
 	}
 }
 
+// ImageEntity is the representation of an entity to be displayed.
 type ImageEntity struct {
 	Namespace      string
 	PodName        string
@@ -103,11 +106,13 @@ func (ie *ImageEntity) format(columns []string) []string {
 	return result
 }
 
+// Counter is a simple counter.
 type Counter struct {
 	cnt   int
 	items map[string]bool
 }
 
+// NewCounter creates a new Counter instance.
 func NewCounter() *Counter {
 	return &Counter{items: make(map[string]bool)}
 }
@@ -119,6 +124,7 @@ func (c *Counter) add(obj string) {
 	}
 }
 
+// Count returns current counter reading.
 func (c *Counter) Count() int {
 	return c.cnt
 }
@@ -131,6 +137,7 @@ func (ki *KubeImage) stringSplit(in, sep string) []string {
 	return out
 }
 
+// Columns builds a display row with specified columns.
 func (ki *KubeImage) Columns() []string {
 	result := make([]string, 0)
 	for _, c := range ki.stringSplit(ki.columns, ",") {
@@ -148,6 +155,7 @@ func (ki *KubeImage) Columns() []string {
 	return result
 }
 
+// Commands builds the command to be executed based on user input.
 func (ki *KubeImage) Commands() []string {
 	if ki.allNamespace {
 		return []string{"get", "pods", "-A", "-o", gotemplate}
@@ -222,6 +230,7 @@ func (ki *KubeImage) summary() {
 	))
 }
 
+// Render renders and displays the table output.
 func (ki *KubeImage) Render() {
 	ki.run()
 
