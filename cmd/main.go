@@ -1,0 +1,50 @@
+package main
+
+import (
+	"fmt"
+	"regexp"
+
+	"github.com/chenjiandongx/kubectl-image"
+	"github.com/spf13/cobra"
+)
+
+const version = "0.1.0"
+
+var rootCmd *cobra.Command
+
+func init() {
+	rootCmd = &cobra.Command{
+		Use:   "kubectl-image [podname-regex]",
+		Short: "Show container images used in the cluster.",
+		Example: `  # display a table of all images in current namespace using podName/containerName/containerImage as columns.
+  kubectl image
+
+  # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
+  kubectl image -n dev nginx -c 1,2`,
+		Version: version,
+		Run: func(cmd *cobra.Command, args []string) {
+			var regx *regexp.Regexp
+			var err error
+			if len(args) > 0 {
+				if regx, err = regexp.Compile(args[0]); err != nil {
+					fmt.Println("[Oh...] Invalid regex pattern.")
+					return
+				}
+			}
+			namespace, _ := cmd.Flags().GetString("namespace")
+			columns, _ := cmd.Flags().GetString("columns")
+			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
+			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns)
+			kubeImage.Render()
+		},
+	}
+	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
+	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
+	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
+}
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+	}
+}
