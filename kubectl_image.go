@@ -1,4 +1,4 @@
-package main
+package kubeimage
 
 import (
 	"fmt"
@@ -8,58 +8,16 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/spf13/cobra"
 )
 
 const (
 	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{end}}`
-
-	version = "0.1.0"
 
 	namespace      = "Namespace"
 	podName        = "PodName"
 	containerName  = "ContainerName"
 	containerImage = "ContainerImage"
 )
-
-var rootCmd *cobra.Command
-
-func init() {
-	rootCmd = &cobra.Command{
-		Use:   "kubectl-image [podname-regex]",
-		Short: "Show container images used in the cluster.",
-		Example: `  # display a table of all images in current namespace using podName/containerName/containerImage as columns.
-  kubectl image
-
-  # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
-  kubectl image -n dev nginx -c 1,2`,
-		Version: version,
-		Run: func(cmd *cobra.Command, args []string) {
-			var regx *regexp.Regexp
-			var err error
-			if len(args) > 0 {
-				if regx, err = regexp.Compile(args[0]); err != nil {
-					fmt.Println("[Oh...] Invalid regex pattern.")
-					return
-				}
-			}
-			namespace, _ := cmd.Flags().GetString("namespace")
-			columns, _ := cmd.Flags().GetString("columns")
-			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
-			kubeImage := NewKubeImage(regx, allNamespace, namespace, columns)
-			kubeImage.Render()
-		},
-	}
-	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
-	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
-	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
-}
-
-func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-	}
-}
 
 // KubeImage is the representation of a container image used in the cluster.
 type KubeImage struct {
@@ -68,7 +26,6 @@ type KubeImage struct {
 	namespace    string
 	columns      string
 	regx         *regexp.Regexp
-	command      []string
 }
 
 // NewKubeImage creates a new KubeImage instance.
