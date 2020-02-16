@@ -24,7 +24,7 @@ $ curl -Lo kubectl-image https://github.com/chenjiandongx/kubectl-image/releases
 # Windows
 $ curl -Lo kubectl-image https://github.com/chenjiandongx/kubectl-image/releases/download/v${VERSION}/kubectl-image_windows_amd64
 
-$ mv kubectl-image /usr/local/bin/
+$ chmod +x kubectl-image && mv kubectl-image /usr/local/bin/
 $ kubectl image --help
 ```
 
