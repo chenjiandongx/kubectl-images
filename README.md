@@ -47,9 +47,9 @@ Examples:
 Flags:
   -A, --all-namespaces     if present, list images in all namespaces.
   -c, --columns string     specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage] (default "1,2,3")
-  -h, --help               help for kubectl-image
+  -h, --help               help for kubectl-images
   -n, --namespace string   if present, list images in the specified namespace only. Use current namespace as fallback.
-      --version            version for kubectl-image
+      --version            version for kubectl-images
 ```
 
 ### 🔖 Glances
