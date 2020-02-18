@@ -1,4 +1,4 @@
-module github.com/chenjiandongx/kubectl-image
+module github.com/chenjiandongx/kubectl-images
 
 go 1.13
 

@@ -1,4 +1,4 @@
-<h1 align="center">kubectl-image</h1>
+<h1 align="center">kubectl-images</h1>
 
 <p align="center">
   <em>🕸 show container images used in the cluster.</em>
@@ -8,9 +8,9 @@
 
 Bulid from source code
 ```shell
-$ git clone https://github.com/chenjiandongx/kubectl-image.git
-$ cd kubectl-image && go build -ldflags="-s -w" -o kubectl-image . && mv ./kubectl-image /usr/local/bin
-$ kubectl image --help
+$ git clone https://github.com/chenjiandongx/kubectl-images.git
+$ cd kubectl-images && go build -ldflags="-s -w" -o kubectl-images . && mv ./kubectl-images /usr/local/bin
+$ kubectl images --help
 ```
 
 Download the binary
@@ -18,31 +18,31 @@ Download the binary
 export VERSION=0.1.0
 
 # Linux
-$ curl -Lo kubectl-image https://github.com/chenjiandongx/kubectl-image/releases/download/v${VERSION}/kubectl-image_linux_amd64
+$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_linux_amd64
 # MacOS
-$ curl -Lo kubectl-image https://github.com/chenjiandongx/kubectl-image/releases/download/v${VERSION}/kubectl-image_darwin_amd64
+$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_darwin_amd64
 # Windows
-$ curl -Lo kubectl-image https://github.com/chenjiandongx/kubectl-image/releases/download/v${VERSION}/kubectl-image_windows_amd64
+$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_windows_amd64
 
-$ chmod +x kubectl-image && mv kubectl-image /usr/local/bin/
-$ kubectl image --help
+$ chmod +x kubectl-images && mv kubectl-images /usr/local/bin/
+$ kubectl images --help
 ```
 
 ### 📝 Usage
 
 ```shell
-~ 🐶 kubectl image --help
+~ 🐶 kubectl images --help
 Show container images used in the cluster.
 
 Usage:
-  kubectl-image [podname-regex] [flags]
+  kubectl-images [podname-regex] [flags]
 
 Examples:
   # display a table of all images in current namespace using podName/containerName/containerImage as columns.
-  kubectl image
+  kubectl images
 
   # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
-  kubectl image -n dev nginx -c 1,2
+  kubectl images -n dev nginx -c 1,2
 
 Flags:
   -A, --all-namespaces     if present, list images in all namespaces.

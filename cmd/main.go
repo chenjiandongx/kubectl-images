@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/chenjiandongx/kubectl-image"
+	"github.com/chenjiandongx/kubectl-images"
 	"github.com/spf13/cobra"
 )
 
@@ -14,13 +14,13 @@ var rootCmd *cobra.Command
 
 func init() {
 	rootCmd = &cobra.Command{
-		Use:   "kubectl-image [podname-regex]",
+		Use:   "kubectl-images [podname-regex]",
 		Short: "Show container images used in the cluster.",
 		Example: `  # display a table of all images in current namespace using podName/containerName/containerImage as columns.
-  kubectl image
+  kubectl images
 
   # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
-  kubectl image -n dev nginx -c 1,2`,
+  kubectl images -n dev nginx -c 1,2`,
 		Version: version,
 		Run: func(cmd *cobra.Command, args []string) {
 			var regx *regexp.Regexp
