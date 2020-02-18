@@ -54,8 +54,8 @@ Flags:
 
 ### 🔖 Glances
 
-![image](https://user-images.githubusercontent.com/19553554/74601790-d54f6980-50dc-11ea-90d6-004650d5ed2f.jpg)
-![image](https://user-images.githubusercontent.com/19553554/74601792-de403b00-50dc-11ea-9a26-a354668b8195.jpg)
+![image](https://user-images.githubusercontent.com/19553554/74729593-a9201e00-527f-11ea-8325-a4c332dde783.png)
+![image](https://user-images.githubusercontent.com/19553554/74729607-ade4d200-527f-11ea-938d-892158d7560f.png)
 
 ### 📃 License
 
