@@ -6,6 +6,20 @@
 
 ### 🔰 Installation
 
+Krew
+```shell
+$ kubectl krew install images
+Updated the local copy of plugin index.
+Installing plugin: images
+Installed plugin: images
+\
+ | Use this plugin:
+ | 	kubectl images
+ | Documentation:
+ | 	https://github.com/chenjiandongx/kubectl-images
+/
+```
+
 Bulid from source code
 ```shell
 $ git clone https://github.com/chenjiandongx/kubectl-images.git
