@@ -1,8 +1,9 @@
 <h1 align="center">kubectl-images</h1>
-
 <p align="center">
-  <em>🕸 show container images used in the cluster.</em>
+  <em>🕸 Show container images used in the cluster.</em>
 </p>
+
+kubectl-images makes use of the `kubectl` command. It first calls `kubectl get pods` to retrieve pods details and filters out the container image information of each pod, then prints out the final result in a table view.
 
 ### 🔰 Installation
 
@@ -20,7 +21,7 @@ Installed plugin: images
 /
 ```
 
-Bulid from source code
+Build from source code
 ```shell
 $ git clone https://github.com/chenjiandongx/kubectl-images.git
 $ cd kubectl-images && go build -ldflags="-s -w" -o kubectl-images . && mv ./kubectl-images /usr/local/bin
