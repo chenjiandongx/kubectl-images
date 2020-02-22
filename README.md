@@ -3,6 +3,8 @@
   <em>🕸 Show container images used in the cluster.</em>
 </p>
 
+kubectl-images makes use of the `kubectl` command. It first calls `kubectl get pods` to retrieve pods details and filters out the container image information of each pod, then prints out the final result in a table view.
+
 ### 🔰 Installation
 
 Krew
@@ -69,10 +71,6 @@ Flags:
 
 ![image](https://user-images.githubusercontent.com/19553554/74729593-a9201e00-527f-11ea-8325-a4c332dde783.png)
 ![image](https://user-images.githubusercontent.com/19553554/74729607-ade4d200-527f-11ea-938d-892158d7560f.png)
-
-### 💡How it works under the hood?
-
-kubectl-images makes use of the `kubectl` command. It first calls `kubectl get pods` to retrieve pods details and filters out the container image information of each pod, then prints out the final result in a table view.
 
 ### 📃 License
 
