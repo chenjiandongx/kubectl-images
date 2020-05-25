@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{end}}`
+	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{end}}`
 
 	namespace      = "Namespace"
 	podName        = "PodName"
