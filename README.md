@@ -30,7 +30,7 @@ $ kubectl images --help
 
 Download the binary
 ```shell
-export VERSION=0.2.0
+export VERSION=0.3.0
 
 # Linux
 $ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_linux_amd64
@@ -63,6 +63,7 @@ Flags:
   -A, --all-namespaces     if present, list images in all namespaces.
   -c, --columns string     specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage] (default "1,2,3")
   -h, --help               help for kubectl-images
+  -k, --kubeconfig string  path to the kubeconfig file to use for CLI requests.
   -n, --namespace string   if present, list images in the specified namespace only. Use current namespace as fallback.
       --version            version for kubectl-images
 ```

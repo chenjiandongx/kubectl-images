@@ -25,15 +25,17 @@ type KubeImage struct {
 	allNamespace bool
 	namespace    string
 	columns      string
+	kubeconfig   string
 	regx         *regexp.Regexp
 }
 
 // NewKubeImage creates a new KubeImage instance.
-func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns string) *KubeImage {
+func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, kubeconfig string) *KubeImage {
 	return &KubeImage{
 		allNamespace: allNamespace,
 		columns:      columns,
 		namespace:    namespace,
+		kubeconfig:   kubeconfig,
 		regx:         regx,
 	}
 }
@@ -114,12 +116,17 @@ func (ki *KubeImage) Columns() []string {
 
 // Commands builds the command to be executed based on user input.
 func (ki *KubeImage) Commands() []string {
-	if ki.allNamespace {
-		return []string{"get", "pods", "-A", "-o", gotemplate}
-	} else if ki.namespace != "" {
-		return []string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}
+	kubecfg := make([]string, 0)
+	if ki.kubeconfig != "" {
+		kubecfg = append(kubecfg, "--kubeconfig", ki.kubeconfig)
 	}
-	return []string{"get", "pods", "-o", gotemplate}
+
+	if ki.allNamespace {
+		return append([]string{"get", "pods", "-A", "-o", gotemplate}, kubecfg...)
+	} else if ki.namespace != "" {
+		return append([]string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}, kubecfg...)
+	}
+	return append([]string{"get", "pods", "-o", gotemplate}, kubecfg...)
 }
 
 func (ki *KubeImage) run() {
