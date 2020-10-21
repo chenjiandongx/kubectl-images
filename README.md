@@ -30,7 +30,7 @@ $ kubectl images --help
 
 Download the binary
 ```shell
-export VERSION=0.3.0
+export VERSION=0.3.1
 
 # Linux
 $ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_linux_amd64
