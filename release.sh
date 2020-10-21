@@ -26,12 +26,12 @@ CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$windows_dist
 cd ..
 
+cp LICENSE $outdir
 cd $outdir
-cp $linux_dist $bin && tar cfz $linux_dist.tar.gz $bin
-cp $darwin_dist $bin && tar cfz $darwin_dist.tar.gz $bin
-cp $windows_dist $bin && tar cfz $windows_dist.tar.gz $bin
+cp $linux_dist $bin && tar cfz $linux_dist.tar.gz LICENSE $bin
+cp $darwin_dist $bin && tar cfz $darwin_dist.tar.gz LICENSE $bin
+cp $windows_dist $bin && tar cfz $windows_dist.tar.gz  LICENSE $bin
 rm $bin
-
 
 echo "Please update this file accordingly:"
 echo "https://github.com/kubernetes-sigs/krew-index/blob/master/plugins/images.yaml"
