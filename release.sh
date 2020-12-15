@@ -21,9 +21,9 @@ if [ ! -d $outdir ]; then
 fi
 
 cd cmd
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$linux_dist
-CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$darwin_dist
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$windows_dist
+GOOS=linux go build -ldflags="-s -w" -o ../$outdir/$linux_dist
+GOOS=darwin go build -ldflags="-s -w" -o ../$outdir/$darwin_dist
+GOOS=windows go build -ldflags="-s -w" -o ../$outdir/$windows_dist
 cd ..
 
 cp LICENSE $outdir

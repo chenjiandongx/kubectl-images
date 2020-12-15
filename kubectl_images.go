@@ -3,11 +3,12 @@ package kubeimage
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/olekukonko/tablewriter"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 const (
@@ -227,13 +228,11 @@ func (ki *KubeImage) Render(format string) {
 			}
 			var rec []PodRecord
 			for _, v := range ki.entities {
-				rec = append(rec,
-					PodRecord{v.Namespace, v.PodName,
-						v.ContainerName, v.ContainerImage})
+				rec = append(rec, PodRecord{v.Namespace, v.PodName, v.ContainerName, v.ContainerImage})
 			}
 			output, err := json.Marshal(rec)
 			if err != nil {
-				fmt.Println("json err:", err)
+				fmt.Println("[Oh...] failed to marshal JSON data")
 				return
 			}
 			fmt.Println(string(output))
