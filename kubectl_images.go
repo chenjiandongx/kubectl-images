@@ -234,6 +234,7 @@ func (ki *KubeImage) Render(format string) {
 			output, err := json.Marshal(rec)
 			if err != nil {
 				fmt.Println("json err:", err)
+				return
 			}
 			fmt.Println(string(output))
 		}
