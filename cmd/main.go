@@ -33,16 +33,18 @@ func init() {
 			}
 			namespace, _ := cmd.Flags().GetString("namespace")
 			columns, _ := cmd.Flags().GetString("columns")
+			format, _ := cmd.Flags().GetString("output-format")
 			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
 			kubeconfig, _ := cmd.Flags().GetString("kubeconfig")
 			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeconfig)
-			kubeImage.Render()
+			kubeImage.Render(format)
 		},
 	}
 	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
 	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
 	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
 	rootCmd.Flags().StringP("kubeconfig", "k", "", "path to the kubeconfig file to use for CLI requests.")
+	rootCmd.Flags().StringP("output-format","o", "table", "output format(json/table), default value is table")
 }
 
 func main() {

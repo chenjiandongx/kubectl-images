@@ -1,13 +1,13 @@
 package kubeimage
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
-
-	"github.com/olekukonko/tablewriter"
 )
 
 const (
@@ -195,7 +195,7 @@ func (ki *KubeImage) summary() {
 }
 
 // Render renders and displays the table output.
-func (ki *KubeImage) Render() {
+func (ki *KubeImage) Render(format string) {
 	ki.run()
 
 	if len(ki.entities) == 0 {
@@ -203,15 +203,40 @@ func (ki *KubeImage) Render() {
 		return
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(ki.Columns())
-	table.SetAutoFormatHeaders(false)
-	table.SetAutoMergeCells(true)
-	table.SetRowLine(true)
-	for _, v := range ki.entities {
-		table.Append(v.format(ki.Columns()))
+	switch format {
+	case "table":
+		{
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader(ki.Columns())
+			table.SetAutoFormatHeaders(false)
+			table.SetAutoMergeCells(true)
+			table.SetRowLine(true)
+			for _, v := range ki.entities {
+				table.Append(v.format(ki.Columns()))
+			}
+			ki.summary()
+			table.Render()
+		}
+	case "json":
+		{
+			type PodRecord struct {
+				Namespace string
+				Pod       string
+				Container string
+				Image     string
+			}
+			var rec []PodRecord
+			for _, v := range ki.entities {
+				rec = append(rec,
+					PodRecord{v.Namespace, v.PodName,
+						v.ContainerName, v.ContainerImage})
+			}
+			output, err := json.Marshal(rec)
+			if err != nil {
+				fmt.Println("json err:", err)
+				return
+			}
+			fmt.Println(string(output))
+		}
 	}
-
-	ki.summary()
-	table.Render()
 }
