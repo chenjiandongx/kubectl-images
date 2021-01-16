@@ -123,7 +123,7 @@ func (ki *KubeImage) Commands() []string {
 	}
 
 	if ki.allNamespace {
-		return append([]string{"get", "pods", "-A", "-o", gotemplate}, kubecfg...)
+		return append([]string{"get", "pods", "--all-namespaces", "-o", gotemplate}, kubecfg...)
 	} else if ki.namespace != "" {
 		return append([]string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}, kubecfg...)
 	}
