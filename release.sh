@@ -10,7 +10,9 @@ fi
 version=$1
 outdir=releases/$version
 bin=kubectl-images
-linux_dist=kubectl-images_linux_amd64
+
+linux_amd64_dist=kubectl-images_linux_amd64
+linux_arm_dist=kubectl-images_linux_arm
 darwin_dist=kubectl-images_darwin_amd64
 windows_dist=kubectl-images_windows_amd64
 
@@ -21,14 +23,16 @@ if [ ! -d $outdir ]; then
 fi
 
 cd cmd
-GOOS=linux go build -ldflags="-s -w" -o ../$outdir/$linux_dist
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$linux_amd64_dist
+GOOS=linux GOARCH=arm go build -ldflags="-s -w" -o ../$outdir/$linux_arm_dist
 GOOS=darwin go build -ldflags="-s -w" -o ../$outdir/$darwin_dist
 GOOS=windows go build -ldflags="-s -w" -o ../$outdir/$windows_dist
 cd ..
 
 cp LICENSE $outdir
 cd $outdir
-cp $linux_dist $bin && tar cfz $linux_dist.tar.gz LICENSE $bin
+cp $linux_amd64_dist $bin && tar cfz $linux_amd64_dist.tar.gz LICENSE $bin
+cp $linux_arm_dist $bin && tar cfz $linux_arm_dist.tar.gz LICENSE $bin
 cp $darwin_dist $bin && tar cfz $darwin_dist.tar.gz LICENSE $bin
 cp $windows_dist $bin && tar cfz $windows_dist.tar.gz  LICENSE $bin
 rm $bin
@@ -42,6 +46,7 @@ echo "VERSION: $version"
 echo
 echo "SHA256 SUMS:"
 echo "------------"
-sha256sum $linux_dist.tar.gz
+sha256sum $linux_amd64_dist.tar.gz
+sha256sum $linux_arm_dist.tar.gz
 sha256sum $darwin_dist.tar.gz
 sha256sum $windows_dist.tar.gz

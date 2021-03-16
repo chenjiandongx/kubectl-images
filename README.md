@@ -30,15 +30,8 @@ $ kubectl images --help
 
 Download the binary
 ```shell
-export VERSION=0.3.2
-
-# Linux
-$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_linux_amd64
-# MacOS
-$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_darwin_amd64
-# Windows
-$ curl -Lo kubectl-images https://github.com/chenjiandongx/kubectl-images/releases/download/v${VERSION}/kubectl-images_windows_amd64
-
+# Refer to the link: https://github.com/chenjiandongx/kubectl-images/releases
+# Download the binary and then...
 $ chmod +x kubectl-images && mv kubectl-images /usr/local/bin/
 $ kubectl images --help
 ```
