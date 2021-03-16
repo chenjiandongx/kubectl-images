@@ -25,8 +25,8 @@ fi
 cd cmd
 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$linux_amd64_dist
 GOOS=linux GOARCH=arm go build -ldflags="-s -w" -o ../$outdir/$linux_arm_dist
-GOOS=darwin go build -ldflags="-s -w" -o ../$outdir/$darwin_dist
-GOOS=windows go build -ldflags="-s -w" -o ../$outdir/$windows_dist
+GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$darwin_dist
+GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../$outdir/$windows_dist
 cd ..
 
 cp LICENSE $outdir
