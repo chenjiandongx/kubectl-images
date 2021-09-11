@@ -47,7 +47,7 @@ echo
 
 linux_amd64_hash=$(echo `sha256sum $linux_amd64_dist.tar.gz` | awk '{print $1}')
 linux_arm_hash=$(echo `sha256sum $linux_arm_dist.tar.gz` | awk '{print $1}')
-inux_arm64_hash=$(echo `sha256sum $linux_arm64_dist.tar.gz` | awk '{print $1}')
+linux_arm64_hash=$(echo `sha256sum $linux_arm64_dist.tar.gz` | awk '{print $1}')
 darwin_amd64_hash=$(echo `sha256sum $darwin_amd64_dist.tar.gz` | awk '{print $1}')
 darwin_arm64_hash=$(echo `sha256sum $darwin_arm64_dist.tar.gz` | awk '{print $1}')
 windows_hash=$(echo `sha256sum $windows_dist.tar.gz` | awk '{print $1}')
