@@ -88,7 +88,7 @@ spec:
       - from: LICENSE
         to: .
     uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_darwin_arm64.tar.gz
-    sha256: $darwin_arm64_hsah
+    sha256: $darwin_arm64_hash
     bin: kubectl-images
   - selector:
       matchLabels:
