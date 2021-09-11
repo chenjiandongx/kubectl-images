@@ -43,18 +43,99 @@ cp $darwin_arm64_dist $bin && tar cfz $darwin_arm64_dist.tar.gz LICENSE $bin
 cp $windows_dist $bin && tar cfz $windows_dist.tar.gz LICENSE $bin
 rm $bin
 
-echo "Please update this file accordingly:"
-echo "https://github.com/kubernetes-sigs/krew-index/blob/master/plugins/images.yaml"
-
 echo
-echo "VERSION: $version"
 
-echo
-echo "SHA256 SUMS:"
-echo "------------"
-sha256sum $linux_amd64_dist.tar.gz
-sha256sum $linux_arm_dist.tar.gz
-sha256sum $linux_arm64_dist.tar.gz
-sha256sum $darwin_amd64_dist.tar.gz
-sha256sum $darwin_arm64_dist.tar.gz
-sha256sum $windows_dist.tar.gz
+linux_amd64_hash=$(echo `sha256sum $linux_amd64_dist.tar.gz` | awk '{print $1}')
+linux_arm_hash=$(echo `sha256sum $linux_arm_dist.tar.gz` | awk '{print $1}')
+inux_arm64_hash=$(echo `sha256sum $linux_arm64_dist.tar.gz` | awk '{print $1}')
+darwin_amd64_hash=$(echo `sha256sum $darwin_amd64_dist.tar.gz` | awk '{print $1}')
+darwin_arm64_hash=$(echo `sha256sum $darwin_arm64_dist.tar.gz` | awk '{print $1}')
+windows_hash=$(echo `sha256sum $windows_dist.tar.gz` | awk '{print $1}')
+
+cat <<EOF
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: images
+spec:
+  version: $1
+  homepage: https://github.com/chenjiandongx/kubectl-images
+  shortDescription: Show container images used in the cluster.
+  description: |
+    This plugin shows container images used in the Kubernetes cluster in a
+    table view. You can show all images or show images used in a specified
+    namespace.
+  platforms:
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_darwin_amd64.tar.gz
+    sha256: $darwin_amd64_hash
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_darwin_arm64.tar.gz
+    sha256: $darwin_arm64_hsah
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_linux_amd64.tar.gz
+    sha256: $linux_amd64_hash
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_linux_arm64.tar.gz
+    sha256: $linux_arm64_hash
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_linux_arm.tar.gz
+    sha256: $linux_arm_hash
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: windows
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    uri: https://github.com/chenjiandongx/kubectl-images/releases/download/$1/kubectl-images_windows_amd64.tar.gz
+    sha256: $windows_hash
+    bin: kubectl-images
+EOF
