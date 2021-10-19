@@ -71,9 +71,9 @@ spec:
         os: windows
         arch: amd64
     files:
-      - from: kubectl-images
+      - from: kubectl-images.exe
         to: .
       - from: LICENSE
         to: .
     {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_windows_amd64.tar.gz" .TagName }}
-    bin: kubectl-images
+    bin: kubectl-images.exe
