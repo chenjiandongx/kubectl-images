@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/chenjiandongx/kubectl-images"
+	kubeimage "github.com/chenjiandongx/kubectl-images"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +36,8 @@ func init() {
 			format, _ := cmd.Flags().GetString("output-format")
 			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
 			kubeconfig, _ := cmd.Flags().GetString("kubeconfig")
-			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeconfig)
+			context, _ := cmd.Flags().GetString("context")
+			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeconfig, context)
 			kubeImage.Render(format)
 		},
 	}
@@ -44,7 +45,8 @@ func init() {
 	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
 	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage]")
 	rootCmd.Flags().StringP("kubeconfig", "k", "", "path to the kubeconfig file to use for CLI requests.")
-	rootCmd.Flags().StringP("output-format","o", "table", "output format. [json|table]")
+	rootCmd.Flags().StringP("output-format", "o", "table", "output format. [json|table]")
+	rootCmd.Flags().String("context", "", "The name of the kubeconfig context to use.")
 }
 
 func main() {

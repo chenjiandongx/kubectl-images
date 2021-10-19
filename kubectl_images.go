@@ -27,16 +27,18 @@ type KubeImage struct {
 	namespace    string
 	columns      string
 	kubeconfig   string
+	context      string
 	regx         *regexp.Regexp
 }
 
 // NewKubeImage creates a new KubeImage instance.
-func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, kubeconfig string) *KubeImage {
+func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, kubeconfig, context string) *KubeImage {
 	return &KubeImage{
 		allNamespace: allNamespace,
 		columns:      columns,
 		namespace:    namespace,
 		kubeconfig:   kubeconfig,
+		context:      context,
 		regx:         regx,
 	}
 }
@@ -120,6 +122,10 @@ func (ki *KubeImage) Commands() []string {
 	kubecfg := make([]string, 0)
 	if ki.kubeconfig != "" {
 		kubecfg = append(kubecfg, "--kubeconfig", ki.kubeconfig)
+	}
+
+	if ki.context != "" {
+		kubecfg = append(kubecfg, "--context", ki.context)
 	}
 
 	if ki.allNamespace {
