@@ -1,7 +1,7 @@
 apiVersion: krew.googlecontainertools.github.com/v1alpha2
 kind: Plugin
 metadata:
-  name: kubectl-images
+  name: images
 spec:
   version: {{ .TagName }}
   homepage: https://github.com/chenjiandongx/kubectl-images
@@ -11,69 +11,69 @@ spec:
     table view. You can show all images or show images used in a specified
     namespace.
   platforms:
-    - selector:
-        matchLabels:
-          os: darwin
-          arch: amd64
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_amd64.tar.gz" .TagName }}
-      bin: kubectl-images
-    - selector:
-        matchLabels:
-          os: darwin
-          arch: arm64
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_arm64.tar.gz" .TagName }}
-      bin: kubectl-images
-    - selector:
-        matchLabels:
-          os: linux
-          arch: amd64
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_amd64.tar.gz" .TagName }}
-      bin: kubectl-images
-    - selector:
-        matchLabels:
-          os: linux
-          arch: arm64
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm64.tar.gz" .TagName }}
-      bin: kubectl-images
-    - selector:
-        matchLabels:
-          os: linux
-          arch: arm
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm.tar.gz" .TagName }}
-      bin: kubectl-images
-    - selector:
-        matchLabels:
-          os: windows
-          arch: amd64
-      files:
-        - from: kubectl-images
-          to: .
-        - from: LICENSE
-          to: .
-      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_windows_amd64.tar.gz" .TagName }}
-      bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_amd64.tar.gz" .TagName }}
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_arm64.tar.gz" .TagName }}
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_amd64.tar.gz" .TagName }}
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm64.tar.gz" .TagName }}
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm.tar.gz" .TagName }}
+    bin: kubectl-images
+  - selector:
+      matchLabels:
+        os: windows
+        arch: amd64
+    files:
+      - from: kubectl-images
+        to: .
+      - from: LICENSE
+        to: .
+    {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_windows_amd64.tar.gz" .TagName }}
+    bin: kubectl-images
