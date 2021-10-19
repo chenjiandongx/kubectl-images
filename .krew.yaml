@@ -1,7 +1,7 @@
 apiVersion: krew.googlecontainertools.github.com/v1alpha2
 kind: Plugin
 metadata:
-  name: images
+  name: kubectl-images
 spec:
   version: {{ .TagName }}
   homepage: https://github.com/chenjiandongx/kubectl-images
@@ -20,7 +20,7 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_amd64.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_amd64.tar.gz" .TagName }}
       bin: kubectl-images
     - selector:
         matchLabels:
@@ -31,7 +31,7 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_arm64.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_darwin_arm64.tar.gz" .TagName }}
       bin: kubectl-images
     - selector:
         matchLabels:
@@ -42,7 +42,7 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_amd64.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_amd64.tar.gz" .TagName }}
       bin: kubectl-images
     - selector:
         matchLabels:
@@ -53,7 +53,7 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm64.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm64.tar.gz" .TagName }}
       bin: kubectl-images
     - selector:
         matchLabels:
@@ -64,7 +64,7 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_linux_arm.tar.gz" .TagName }}
       bin: kubectl-images
     - selector:
         matchLabels:
@@ -75,5 +75,5 @@ spec:
           to: .
         - from: LICENSE
           to: .
-      {{addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_windows_amd64.tar.gz" .TagName}}
+      {{ addURIAndSha "https://github.com/chenjiandongx/kubectl-images/releases/download/{{ .TagName }}/kubectl-images_windows_amd64.tar.gz" .TagName }}
       bin: kubectl-images
