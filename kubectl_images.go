@@ -12,12 +12,13 @@ import (
 )
 
 const (
-	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{"\n"}} {{end}} {{end}}`
+	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{end}}`
 
-	namespace      = "Namespace"
-	podName        = "PodName"
-	containerName  = "ContainerName"
-	containerImage = "ContainerImage"
+	namespace       = "Namespace"
+	podName         = "PodName"
+	containerName   = "ContainerName"
+	containerImage  = "ContainerImage"
+	imagePullPolicy = "ImagePullPolicy"
 )
 
 // KubeImage is the representation of a container image used in the cluster.
@@ -45,10 +46,11 @@ func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, ku
 
 // ImageEntity is the representation of an entity to be displayed.
 type ImageEntity struct {
-	Namespace      string
-	PodName        string
-	ContainerName  string
-	ContainerImage string
+	Namespace       string
+	PodName         string
+	ContainerName   string
+	ContainerImage  string
+	ImagePullPolicy string
 }
 
 func (ie *ImageEntity) format(columns []string) []string {
@@ -63,6 +65,8 @@ func (ie *ImageEntity) format(columns []string) []string {
 			result = append(result, ie.ContainerName)
 		case containerImage:
 			result = append(result, ie.ContainerImage)
+		case imagePullPolicy:
+			result = append(result, ie.ImagePullPolicy)
 		}
 	}
 	return result
@@ -112,6 +116,8 @@ func (ki *KubeImage) Columns() []string {
 			result = append(result, containerName)
 		case "3":
 			result = append(result, containerImage)
+		case "4":
+			result = append(result, imagePullPolicy)
 		}
 	}
 	return result
@@ -153,14 +159,16 @@ func (ki *KubeImage) run() {
 		switch len(items) {
 		case 1:
 			continue
-		case 2:
+		case 3:
 			entity.ContainerName = items[0]
 			entity.ContainerImage = items[1]
-		case 4:
+			entity.ImagePullPolicy = items[2]
+		case 5:
 			entity.Namespace = items[0]
 			entity.PodName = items[1]
 			entity.ContainerName = items[2]
 			entity.ContainerImage = items[3]
+			entity.ImagePullPolicy = items[4]
 		}
 		entities = append(entities, entity)
 	}
@@ -227,14 +235,15 @@ func (ki *KubeImage) Render(format string) {
 	case "json":
 		{
 			type PodRecord struct {
-				Namespace string
-				Pod       string
-				Container string
-				Image     string
+				Namespace       string
+				Pod             string
+				Container       string
+				Image           string
+				ImagePullPolicy string
 			}
 			var rec []PodRecord
 			for _, v := range ki.entities {
-				rec = append(rec, PodRecord{v.Namespace, v.PodName, v.ContainerName, v.ContainerImage})
+				rec = append(rec, PodRecord{v.Namespace, v.PodName, v.ContainerName, v.ContainerImage, v.ImagePullPolicy})
 			}
 			output, err := json.Marshal(rec)
 			if err != nil {
