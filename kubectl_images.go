@@ -204,9 +204,9 @@ func (ki *KubeImage) summary() {
 		containerCnt += 1
 	}
 
-	fmt.Println(fmt.Sprintf("[Summary]: %d namespaces, %d pods, %d containers and %d different images",
+	fmt.Printf("[Summary]: %d namespaces, %d pods, %d containers and %d different images\n",
 		namespaceCnt.Count(), podCnt.Count(), containerCnt, imageCnt.Count(),
-	))
+	)
 }
 
 // Render renders and displays the table output.
@@ -241,11 +241,17 @@ func (ki *KubeImage) Render(format string) {
 				Image           string
 				ImagePullPolicy string
 			}
-			var rec []PodRecord
+			var records []PodRecord
 			for _, v := range ki.entities {
-				rec = append(rec, PodRecord{v.Namespace, v.PodName, v.ContainerName, v.ContainerImage, v.ImagePullPolicy})
+				records = append(records, PodRecord{
+					Namespace:       v.Namespace,
+					Pod:             v.PodName,
+					Container:       v.ContainerName,
+					Image:           v.ContainerImage,
+					ImagePullPolicy: v.ImagePullPolicy,
+				})
 			}
-			output, err := json.Marshal(rec)
+			output, err := json.Marshal(records)
 			if err != nil {
 				fmt.Println("[Oh...] failed to marshal JSON data")
 				return

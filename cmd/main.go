@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.3.6"
+const version = "0.3.7"
 
 var rootCmd *cobra.Command
 
@@ -35,9 +35,9 @@ func init() {
 			columns, _ := cmd.Flags().GetString("columns")
 			format, _ := cmd.Flags().GetString("output-format")
 			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
-			kubeconfig, _ := cmd.Flags().GetString("kubeconfig")
+			kubeConfig, _ := cmd.Flags().GetString("kubeConfig")
 			context, _ := cmd.Flags().GetString("context")
-			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeconfig, context)
+			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeConfig, context)
 			kubeImage.Render(format)
 		},
 	}
