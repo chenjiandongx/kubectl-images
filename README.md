@@ -4,7 +4,7 @@
 </p>
 
 kubectl-images makes use of the `kubectl` command. It first calls `kubectl get pods` to retrieve pods details and
-filters out the container image information of each pod, then prints out the final result in a table view.
+filters out the container image information of each pod, then prints out the final result in a table/json/yaml view.
 
 ### 🔰 Installation
 
