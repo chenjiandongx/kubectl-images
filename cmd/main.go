@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 
-	kubeimage "github.com/chenjiandongx/kubectl-images"
+	kubeimages "github.com/chenjiandongx/kubectl-images"
 	"github.com/spf13/cobra"
 )
 
-const version = "0.3.7"
+const version = "0.4.0"
 
 var rootCmd *cobra.Command
 
@@ -19,6 +20,9 @@ func init() {
 		Example: `  # display a table of all images in current namespace using podName/containerName/containerImage as columns.
   kubectl images
 
+  # display images info in yaml format
+  kubectl images -oy
+
   # display a table of images that match 'nginx' podname regex in 'dev' namespace using podName/containerImage as columns.
   kubectl images -n dev nginx -c 1,2`,
 		Version: version,
@@ -27,7 +31,7 @@ func init() {
 			var err error
 			if len(args) > 0 {
 				if regx, err = regexp.Compile(args[0]); err != nil {
-					fmt.Println("[Oh...] Invalid regex pattern.")
+					fmt.Fprintf(os.Stderr, "[Oh...] Invalid regex pattern (%q)", args[0])
 					return
 				}
 			}
@@ -37,7 +41,7 @@ func init() {
 			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
 			kubeConfig, _ := cmd.Flags().GetString("kubeConfig")
 			context, _ := cmd.Flags().GetString("context")
-			kubeImage := kubeimage.NewKubeImage(regx, allNamespace, namespace, columns, kubeConfig, context)
+			kubeImage := kubeimages.NewKubeImage(regx, allNamespace, namespace, columns, kubeConfig, context)
 			kubeImage.Render(format)
 		},
 	}
@@ -45,12 +49,12 @@ func init() {
 	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
 	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage, 4:ImagePullPolicy]")
 	rootCmd.Flags().StringP("kubeconfig", "k", "", "path to the kubeconfig file to use for CLI requests.")
-	rootCmd.Flags().StringP("output-format", "o", "table", "output format. [json|table]")
-	rootCmd.Flags().String("context", "", "The name of the kubeconfig context to use.")
+	rootCmd.Flags().StringP("output-format", "o", "table", "output format. [json(j)|table(t)|yaml(y)]")
+	rootCmd.Flags().StringP("context", "C", "", "The name of the kubeconfig context to use.")
 }
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "[Oh...] Failed to exec command: %v", err)
 	}
 }
