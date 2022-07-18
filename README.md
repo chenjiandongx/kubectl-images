@@ -67,6 +67,7 @@ Flags:
   -k, --kubeconfig string      path to the kubeconfig file to use for CLI requests.
   -n, --namespace string       if present, list images in the specified namespace only. Use current namespace as fallback.
   -o, --output-format string   output format. [json(j)|table(t)|yaml(y)] (default "table")
+  -u, --unique                 Unique images group by namespace/container/images/pullPolicy.
       --version                version for kubectl-images
 ```
 
@@ -107,6 +108,30 @@ Flags:
 | nginx       | nginx-deployment-66b6c48dd5-s9wv5      | nginx:1.14.2                               |
 +             +----------------------------------------+                                            +
 |             | nginx-deployment-66b6c48dd5-wmn9x      |                                            |
++-------------+----------------------------------------+--------------------------------------------+
+
+~ 🐶 kubectl images -A -c 0,1,3 -u
+[Summary]: 2 namespaces, 11 pods, 11 containers and 9 different images
++-------------+----------------------------------------+--------------------------------------------+
+|  Namespace  |                  Pod                   |                   Image                    |
++-------------+----------------------------------------+--------------------------------------------+
+| kube-system | coredns-78fcd69978-9pbjh               | k8s.gcr.io/coredns/coredns:v1.8.4          |                                      +
++             +----------------------------------------+--------------------------------------------+
+|             | etcd-docker-desktop                    | k8s.gcr.io/etcd:3.5.0-0                    |
++             +----------------------------------------+--------------------------------------------+
+|             | kube-apiserver-docker-desktop          | k8s.gcr.io/kube-apiserver:v1.22.5          |
++             +----------------------------------------+--------------------------------------------+
+|             | kube-controller-manager-docker-desktop | k8s.gcr.io/kube-controller-manager:v1.22.5 |
++             +----------------------------------------+--------------------------------------------+
+|             | kube-proxy-vc7fv                       | k8s.gcr.io/kube-proxy:v1.22.5              |
++             +----------------------------------------+--------------------------------------------+
+|             | kube-scheduler-docker-desktop          | k8s.gcr.io/kube-scheduler:v1.22.5          |
++             +----------------------------------------+--------------------------------------------+
+|             | storage-provisioner                    | docker/desktop-storage-provisioner:v2.0    |
++             +----------------------------------------+--------------------------------------------+
+|             | vpnkit-controller                      | docker/desktop-vpnkit-controller:v2.0      |
++-------------+----------------------------------------+--------------------------------------------+
+| nginx       | nginx-deployment-66b6c48dd5-s9wv5      | nginx:1.14.2                               |
 +-------------+----------------------------------------+--------------------------------------------+
 
 ~ 🐶 kubectl images -c 0,1,2,3,4 -n nginx -oj
