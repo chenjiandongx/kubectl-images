@@ -103,7 +103,7 @@ func (ie *ImageEntity) filterBy(columns []string) ImageEntity {
 		case labelContainer:
 			entity.Container = ie.Container
 		case labelImage:
-			entity.Image = ie.Namespace
+			entity.Image = ie.Image
 		case labelImagePullPolicy:
 			entity.ImagePullPolicy = ie.ImagePullPolicy
 		}

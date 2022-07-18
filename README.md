@@ -77,10 +77,10 @@ Flags:
 ~ 🐶 kubectl images -n kube-system -oy dns
 - pod: coredns-78fcd69978-9pbjh
   container: coredns
-  image: kube-system
+  image: k8s.gcr.io/coredns/coredns:v1.8.4
 - pod: coredns-78fcd69978-jh7m2
   container: coredns
-  image: kube-system
+  image: k8s.gcr.io/coredns/coredns:v1.8.4
 
 ~ 🐶 kubectl images -A -c 0,1,3
 [Summary]: 2 namespaces, 11 pods, 11 containers and 9 different images
@@ -141,14 +141,14 @@ Flags:
   "namespace": "nginx",
   "pod": "nginx-deployment-66b6c48dd5-s9wv5",
   "container": "nginx",
-  "image": "nginx",
+  "image": "nginx:latest",
   "imagePullPolicy": "IfNotPresent"
  },
  {
   "namespace": "nginx",
   "pod": "nginx-deployment-66b6c48dd5-wmn9x",
   "container": "nginx",
-  "image": "nginx",
+  "image": "nginx:latest",
   "imagePullPolicy": "IfNotPresent"
  }
 ]
