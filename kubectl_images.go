@@ -273,13 +273,13 @@ func (ki *KubeImage) Render(format string) {
 		return
 	}
 
-	ki.summary()
 	switch format {
 	case "json", "j":
 		ki.jsonRender()
 	case "yaml", "y":
 		ki.yamlRender()
 	default: // table
+		ki.summary()
 		ki.tableRender()
 	}
 }
