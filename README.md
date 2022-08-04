@@ -135,7 +135,6 @@ Flags:
 +-------------+----------------------------------------+--------------------------------------------+
 
 ~ 🐶 kubectl images -c 0,1,2,3,4 -n nginx -oj
-[Summary]: 1 namespaces, 2 pods, 2 containers and 1 different images
 [
  {
   "namespace": "nginx",
