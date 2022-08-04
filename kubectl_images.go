@@ -22,21 +22,27 @@ const (
 	labelImagePullPolicy = "ImagePullPolicy"
 )
 
+type Parameters struct {
+	AllNamespace bool
+	Namespace    string
+	Columns      string
+	KubeConfig   string
+	Context      string
+	Unique       bool
+}
+
 // KubeImage is the representation of a container image used in the cluster.
 type KubeImage struct {
-	entities     []*ImageEntity
-	allNamespace bool
-	namespace    string
-	columns      []string
-	kubeconfig   string
-	context      string
-	regx         *regexp.Regexp
+	entities []*ImageEntity
+	columns  []string
+	regx     *regexp.Regexp
+	params   Parameters
 }
 
 // NewKubeImage creates a new KubeImage instance.
-func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, kubeconfig, context string) *KubeImage {
+func NewKubeImage(regx *regexp.Regexp, params Parameters) *KubeImage {
 	names := make([]string, 0)
-	for _, c := range stringSplit(columns, ",") {
+	for _, c := range stringSplit(params.Columns, ",") {
 		switch c {
 		case "0":
 			names = append(names, labelNamespace)
@@ -52,12 +58,9 @@ func NewKubeImage(regx *regexp.Regexp, allNamespace bool, namespace, columns, ku
 	}
 
 	return &KubeImage{
-		allNamespace: allNamespace,
-		columns:      names,
-		namespace:    namespace,
-		kubeconfig:   kubeconfig,
-		context:      context,
-		regx:         regx,
+		columns: names,
+		params:  params,
+		regx:    regx,
 	}
 }
 
@@ -100,7 +103,7 @@ func (ie *ImageEntity) filterBy(columns []string) ImageEntity {
 		case labelContainer:
 			entity.Container = ie.Container
 		case labelImage:
-			entity.Image = ie.Namespace
+			entity.Image = ie.Image
 		case labelImagePullPolicy:
 			entity.ImagePullPolicy = ie.ImagePullPolicy
 		}
@@ -142,23 +145,23 @@ func stringSplit(in, sep string) []string {
 // Commands builds the command to be executed based on user input.
 func (ki *KubeImage) Commands() []string {
 	kubecfg := make([]string, 0)
-	if ki.kubeconfig != "" {
-		kubecfg = append(kubecfg, "--kubeconfig", ki.kubeconfig)
+	if ki.params.KubeConfig != "" {
+		kubecfg = append(kubecfg, "--kubeconfig", ki.params.KubeConfig)
 	}
 
-	if ki.context != "" {
-		kubecfg = append(kubecfg, "--context", ki.context)
+	if ki.params.Context != "" {
+		kubecfg = append(kubecfg, "--context", ki.params.Context)
 	}
 
-	if ki.allNamespace {
+	if ki.params.AllNamespace {
 		return append([]string{"get", "pods", "--all-namespaces", "-o", gotemplate}, kubecfg...)
-	} else if ki.namespace != "" {
-		return append([]string{"get", "pods", "-n", ki.namespace, "-o", gotemplate}, kubecfg...)
+	} else if ki.params.Namespace != "" {
+		return append([]string{"get", "pods", "-n", ki.params.Namespace, "-o", gotemplate}, kubecfg...)
 	}
 	return append([]string{"get", "pods", "-o", gotemplate}, kubecfg...)
 }
 
-func (ki *KubeImage) run() {
+func (ki *KubeImage) exec() {
 	process := exec.Command("kubectl", ki.Commands()...)
 	bs, err := process.CombinedOutput()
 	if err != nil {
@@ -206,6 +209,26 @@ func (ki *KubeImage) run() {
 	}
 }
 
+func (ki *KubeImage) groupBy() []*ImageEntity {
+	if !ki.params.Unique {
+		return ki.entities
+	}
+
+	set := make(map[string]struct{})
+	entities := make([]*ImageEntity, 0)
+
+	for i, entity := range ki.entities {
+		k := fmt.Sprintf("%s/%s/%s/%s", entity.Namespace, entity.Container, entity.Image, entity.ImagePullPolicy)
+		if _, ok := set[k]; ok {
+			continue
+		}
+
+		set[k] = struct{}{}
+		entities = append(entities, ki.entities[i])
+	}
+	return entities
+}
+
 func (ki *KubeImage) summary() {
 	namespaceCnt := NewCounter()
 	podCnt := NewCounter()
@@ -230,15 +253,18 @@ func (ki *KubeImage) tableRender() {
 	table.SetAutoFormatHeaders(false)
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
-	for _, entity := range ki.entities {
+
+	entities := ki.groupBy()
+	for _, entity := range entities {
 		table.Append(entity.selectBy(ki.columns))
 	}
 	table.Render()
 }
 
 func (ki *KubeImage) jsonRender() {
-	records := make([]ImageEntity, 0, len(ki.entities))
-	for _, entity := range ki.entities {
+	entities := ki.groupBy()
+	records := make([]ImageEntity, 0, len(entities))
+	for _, entity := range entities {
 		records = append(records, entity.filterBy(ki.columns))
 	}
 
@@ -251,8 +277,9 @@ func (ki *KubeImage) jsonRender() {
 }
 
 func (ki *KubeImage) yamlRender() {
-	records := make([]ImageEntity, 0, len(ki.entities))
-	for _, entity := range ki.entities {
+	entities := ki.groupBy()
+	records := make([]ImageEntity, 0, len(entities))
+	for _, entity := range entities {
 		records = append(records, entity.filterBy(ki.columns))
 	}
 
@@ -266,7 +293,7 @@ func (ki *KubeImage) yamlRender() {
 
 // Render renders and displays the table output.
 func (ki *KubeImage) Render(format string) {
-	ki.run()
+	ki.exec()
 
 	if len(ki.entities) == 0 {
 		fmt.Fprintln(os.Stdout, "[Oh...] No images matched!")

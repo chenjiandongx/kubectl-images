@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.4.0"
+const version = "0.5.1"
 
 var rootCmd *cobra.Command
 
@@ -41,7 +41,15 @@ func init() {
 			allNamespace, _ := cmd.Flags().GetBool("all-namespaces")
 			kubeConfig, _ := cmd.Flags().GetString("kubeConfig")
 			context, _ := cmd.Flags().GetString("context")
-			kubeImage := kubeimages.NewKubeImage(regx, allNamespace, namespace, columns, kubeConfig, context)
+			unique, _ := cmd.Flags().GetBool("unique")
+			kubeImage := kubeimages.NewKubeImage(regx, kubeimages.Parameters{
+				AllNamespace: allNamespace,
+				Namespace:    namespace,
+				Columns:      columns,
+				KubeConfig:   kubeConfig,
+				Context:      context,
+				Unique:       unique,
+			})
 			kubeImage.Render(format)
 		},
 	}
@@ -51,6 +59,7 @@ func init() {
 	rootCmd.Flags().StringP("kubeconfig", "k", "", "path to the kubeconfig file to use for CLI requests.")
 	rootCmd.Flags().StringP("output-format", "o", "table", "output format. [json(j)|table(t)|yaml(y)]")
 	rootCmd.Flags().StringP("context", "C", "", "The name of the kubeconfig context to use.")
+	rootCmd.Flags().BoolP("unique", "u", false, "Unique images group by namespace/container/images/pullPolicy.")
 }
 
 func main() {
