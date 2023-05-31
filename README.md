@@ -61,7 +61,7 @@ Examples:
 
 Flags:
   -A, --all-namespaces         if present, list images in all namespaces.
-  -c, --columns string         specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage, 4:ImagePullPolicy] (default "1,2,3")
+  -c, --columns string         specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage, 4:ImagePullPolicy, 5:ImageSize] (default "1,2,3")
   -C, --context string         The name of the kubeconfig context to use.
   -h, --help                   help for kubectl-images
   -k, --kubeconfig string      path to the kubeconfig file to use for CLI requests.
