@@ -207,8 +207,13 @@ func (ki *KubeImage) execNodeCommand() {
 			if err != nil {
 				continue
 			}
+
 			ki.imageSize[items[0]] = size
 			ki.imageSize[items[1]] = size
+			parts := strings.Split(items[1], ":")
+			if len(parts) == 2 && parts[1] == "latest" {
+				ki.imageSize[parts[0]] = size
+			}
 		}
 	}
 

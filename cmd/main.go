@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.6.0"
+const version = "0.6.1"
 
 var rootCmd *cobra.Command
 
