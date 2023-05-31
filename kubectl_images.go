@@ -6,20 +6,24 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	gotemplate = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{end}}`
+	podTemplate  = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{end}}`
+	nodeTemplate = `go-template={{range .items}} {{range .status.images}} {{range .names}} {{.}} {{","}} {{end}} {{.sizeBytes}} {{"\n"}} {{end}} {{end}}`
 
 	labelNamespace       = "Namespace"
 	labelPod             = "Pod"
 	labelContainer       = "Container"
 	labelImage           = "Image"
 	labelImagePullPolicy = "ImagePullPolicy"
+	labelImageSize       = "ImageSize"
 )
 
 type Parameters struct {
@@ -33,14 +37,17 @@ type Parameters struct {
 
 // KubeImage is the representation of a container image used in the cluster.
 type KubeImage struct {
-	entities []*ImageEntity
-	columns  []string
-	regx     *regexp.Regexp
-	params   Parameters
+	entities     []*ImageEntity
+	columns      []string
+	regx         *regexp.Regexp
+	params       Parameters
+	imageSize    map[string]int
+	needNodeInfo bool
 }
 
 // NewKubeImage creates a new KubeImage instance.
 func NewKubeImage(regx *regexp.Regexp, params Parameters) *KubeImage {
+	var needNodeInfo bool
 	names := make([]string, 0)
 	for _, c := range stringSplit(params.Columns, ",") {
 		switch c {
@@ -54,13 +61,18 @@ func NewKubeImage(regx *regexp.Regexp, params Parameters) *KubeImage {
 			names = append(names, labelImage)
 		case "4":
 			names = append(names, labelImagePullPolicy)
+		case "5":
+			names = append(names, labelImageSize)
+			needNodeInfo = true
 		}
 	}
 
 	return &KubeImage{
-		columns: names,
-		params:  params,
-		regx:    regx,
+		columns:      names,
+		params:       params,
+		regx:         regx,
+		imageSize:    make(map[string]int),
+		needNodeInfo: needNodeInfo,
 	}
 }
 
@@ -71,6 +83,7 @@ type ImageEntity struct {
 	Container       string `json:"container,omitempty" yaml:"container,omitempty"`
 	Image           string `json:"image,omitempty" yaml:"image,omitempty"`
 	ImagePullPolicy string `json:"imagePullPolicy,omitempty" yaml:"imagePullPolicy,omitempty"`
+	ImageSize       string `json:"imageSize,omitempty" yaml:"imageSize,omitempty"`
 }
 
 func (ie *ImageEntity) selectBy(columns []string) []string {
@@ -87,6 +100,8 @@ func (ie *ImageEntity) selectBy(columns []string) []string {
 			result = append(result, ie.Image)
 		case labelImagePullPolicy:
 			result = append(result, ie.ImagePullPolicy)
+		case labelImageSize:
+			result = append(result, ie.ImageSize)
 		}
 	}
 	return result
@@ -106,6 +121,8 @@ func (ie *ImageEntity) filterBy(columns []string) ImageEntity {
 			entity.Image = ie.Image
 		case labelImagePullPolicy:
 			entity.ImagePullPolicy = ie.ImagePullPolicy
+		case labelImageSize:
+			entity.ImageSize = ie.ImageSize
 		}
 	}
 	return entity
@@ -142,8 +159,8 @@ func stringSplit(in, sep string) []string {
 	return out
 }
 
-// Commands builds the command to be executed based on user input.
-func (ki *KubeImage) Commands() []string {
+// podCommands builds the command to be executed based on user input.
+func (ki *KubeImage) podCommands() []string {
 	kubecfg := make([]string, 0)
 	if ki.params.KubeConfig != "" {
 		kubecfg = append(kubecfg, "--kubeconfig", ki.params.KubeConfig)
@@ -154,18 +171,60 @@ func (ki *KubeImage) Commands() []string {
 	}
 
 	if ki.params.AllNamespace {
-		return append([]string{"get", "pods", "--all-namespaces", "-o", gotemplate}, kubecfg...)
+		return append([]string{"get", "pods", "--all-namespaces", "-o", podTemplate}, kubecfg...)
 	} else if ki.params.Namespace != "" {
-		return append([]string{"get", "pods", "-n", ki.params.Namespace, "-o", gotemplate}, kubecfg...)
+		return append([]string{"get", "pods", "-n", ki.params.Namespace, "-o", podTemplate}, kubecfg...)
 	}
-	return append([]string{"get", "pods", "-o", gotemplate}, kubecfg...)
+	return append([]string{"get", "pods", "-o", podTemplate}, kubecfg...)
 }
 
-func (ki *KubeImage) exec() {
-	process := exec.Command("kubectl", ki.Commands()...)
+func (ki *KubeImage) nodeCommands() []string {
+	kubecfg := make([]string, 0)
+	if ki.params.KubeConfig != "" {
+		kubecfg = append(kubecfg, "--kubeconfig", ki.params.KubeConfig)
+	}
+
+	if ki.params.Context != "" {
+		kubecfg = append(kubecfg, "--context", ki.params.Context)
+	}
+
+	return append([]string{"get", "nodes", "-o", nodeTemplate}, kubecfg...)
+}
+
+func (ki *KubeImage) execNodeCommand() {
+	process := exec.Command("kubectl", ki.nodeCommands()...)
 	bs, err := process.CombinedOutput()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[Oh...] Execute command error: %v, %s", err, string(bs))
+		fmt.Fprintf(os.Stderr, "[Oh...] Execute nodes command error: %v, %s", err, string(bs))
+		os.Exit(1)
+	}
+
+	for _, line := range stringSplit(string(bs), "\n") {
+		items := stringSplit(line, ",")
+		switch len(items) {
+		case 3:
+			size, err := strconv.Atoi(items[2])
+			if err != nil {
+				continue
+			}
+			ki.imageSize[items[0]] = size
+			ki.imageSize[items[1]] = size
+		}
+	}
+
+	for _, entity := range ki.entities {
+		size, ok := ki.imageSize[entity.Image]
+		if ok {
+			entity.ImageSize = humanize.IBytes(uint64(size))
+		}
+	}
+}
+
+func (ki *KubeImage) execPodCommand() {
+	process := exec.Command("kubectl", ki.podCommands()...)
+	bs, err := process.CombinedOutput()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "[Oh...] Execute pods command error: %v, %s", err, string(bs))
 		os.Exit(1)
 	}
 
@@ -293,7 +352,10 @@ func (ki *KubeImage) yamlRender() {
 
 // Render renders and displays the table output.
 func (ki *KubeImage) Render(format string) {
-	ki.exec()
+	ki.execPodCommand()
+	if ki.needNodeInfo {
+		ki.execNodeCommand()
+	}
 
 	if len(ki.entities) == 0 {
 		fmt.Fprintln(os.Stdout, "[Oh...] No images matched!")
