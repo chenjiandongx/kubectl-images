@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -191,6 +192,11 @@ func (ki *KubeImage) nodeCommands() []string {
 	return append([]string{"get", "nodes", "-o", nodeTemplate}, kubecfg...)
 }
 
+func (ki *KubeImage) recordImageSize(image string, size int) {
+	ki.imageSize[image] = size
+	ki.imageSize[path.Base(image)] = size
+}
+
 func (ki *KubeImage) execNodeCommand() {
 	process := exec.Command("kubectl", ki.nodeCommands()...)
 	bs, err := process.CombinedOutput()
@@ -202,17 +208,29 @@ func (ki *KubeImage) execNodeCommand() {
 	for _, line := range stringSplit(string(bs), "\n") {
 		items := stringSplit(line, ",")
 		switch len(items) {
+		case 2:
+			size, err := strconv.Atoi(items[1])
+			if err != nil {
+				continue
+			}
+
+			ki.recordImageSize(items[0], size)
+			parts := strings.Split(items[0], ":")
+			if len(parts) == 2 && parts[1] == "latest" {
+				ki.recordImageSize(parts[0], size)
+			}
+
 		case 3:
 			size, err := strconv.Atoi(items[2])
 			if err != nil {
 				continue
 			}
 
-			ki.imageSize[items[0]] = size
-			ki.imageSize[items[1]] = size
+			ki.recordImageSize(items[0], size)
+			ki.recordImageSize(items[1], size)
 			parts := strings.Split(items[1], ":")
 			if len(parts) == 2 && parts[1] == "latest" {
-				ki.imageSize[parts[0]] = size
+				ki.recordImageSize(parts[0], size)
 			}
 		}
 	}
