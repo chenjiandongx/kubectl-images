@@ -336,11 +336,25 @@ func (ki *KubeImage) tableRender() {
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 
-	entities := ki.groupBy()
+	entities := ki.getGroupByEntities()
 	for _, entity := range entities {
-		table.Append(entity.selectBy(ki.columns))
+		table.Append(entity)
 	}
 	table.Render()
+}
+
+func (ki *KubeImage) getGroupByEntities() [][]string {
+	set := make(map[string]struct{})
+	dst := make([][]string, 0)
+	for _, entity := range ki.groupBy() {
+		line := strings.Join(entity.selectBy(ki.columns), "||")
+		_, ok := set[line]
+		if !ok {
+			set[line] = struct{}{}
+			dst = append(dst, strings.Split(line, "||"))
+		}
+	}
+	return dst
 }
 
 func (ki *KubeImage) jsonRender() {
