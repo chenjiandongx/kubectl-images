@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	podTemplate  = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{end}}`
+	podTemplate  = `go-template={{range .items}} {{.metadata.namespace}} {{","}} {{.metadata.name}} {{","}} {{range .spec.containers}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.initContainers}} {{"(init)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{range .spec.ephemeralContainers}} {{"(ephemeral)"}} {{.name}} {{","}} {{.image}} {{","}} {{.imagePullPolicy}} {{"\n"}} {{end}} {{end}}`
 	nodeTemplate = `go-template={{range .items}} {{range .status.images}} {{range .names}} {{.}} {{","}} {{end}} {{.sizeBytes}} {{"\n"}} {{end}} {{end}}`
 
 	labelNamespace       = "Namespace"
