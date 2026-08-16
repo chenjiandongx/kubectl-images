@@ -60,7 +60,7 @@ Examples:
   kubectl images -n dev nginx -c 1,2
 
 Flags:
-  -A, --all-namespaces         if present, list images in all namespaces.
+  -A, --all-namespaces         if present, list images in all namespaces. Overrides -n/--namespace.
   -c, --columns string         specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage, 4:ImagePullPolicy, 5:ImageSize] (default "1,2,3")
   -C, --context string         The name of the kubeconfig context to use.
   -h, --help                   help for kubectl-images
