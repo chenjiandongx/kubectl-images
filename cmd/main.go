@@ -53,7 +53,7 @@ func init() {
 			kubeImage.Render(format)
 		},
 	}
-	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces.")
+	rootCmd.Flags().BoolP("all-namespaces", "A", false, "if present, list images in all namespaces. Overrides -n/--namespace.")
 	rootCmd.Flags().StringP("namespace", "n", "", "if present, list images in the specified namespace only. Use current namespace as fallback.")
 	rootCmd.Flags().StringP("columns", "c", "1,2,3", "specify the columns to display, separated by comma. [0:Namespace, 1:PodName, 2:ContainerName, 3:ContainerImage, 4:ImagePullPolicy, 5:ImageSize]")
 	rootCmd.Flags().StringP("kubeconfig", "k", "", "path to the kubeconfig file to use for CLI requests.")
